@@ -7,3 +7,40 @@ Performance improvements, I am currently thinking of:
 - For each feature store the total number of occurrences instead of iterating over all available categories trying to find an occurrence.
 - Store the natural logarithms of the feature probabilities and add them together instead of multiplying the probability numbers
 
+Use the ClassifierTester to test. Here is an Example:
+
+> train dogs I like
+> train cats I hate
+> classify What do I like
+dogs
+> classify What do I hate
+cats
+
+I am currently thinking about building a 'forgetfull classifier'. The classifier will forget the oldest classifications. Here is the pseudo-code I am thinking of:
+
+function train(featureset, category):
+
+  // Learn a new classification
+  for each feature from featureset:
+    featureCounts[feature][category]++
+    totalFeatureCounts[feature]++
+  end for
+  totalCategoryCounts[category]++
+
+  // remember the last classification
+  memoryQueue.offer(new Classification(featureset, category))
+
+  // Forget about the oldest classification if the
+  // memory is full
+  if memoryQueue.size > memoryCapacity:
+    toForget = memoryQueue.remove()
+    for each feature from toForget.features:
+      featureCounts[feature][toForget.category]--
+      totalFeatureCounts[feature]--
+    end for
+    totalCategoryCounts[toForget.category]--
+  end if
+
+end function
+
+
