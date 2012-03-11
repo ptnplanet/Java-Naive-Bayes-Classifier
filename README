@@ -1,0 +1,9 @@
+Naive Bayes Classifier implemented in Java.
+
+Nothing special, but it works.
+
+Performance improvements, I am currently thinking of:
+
+- For each feature store the total number of occurrences instead of iterating over all available categories trying to find an occurrence.
+- Store the natural logarithms of the feature probabilities and add them together instead of multiplying the probability numbers
+
