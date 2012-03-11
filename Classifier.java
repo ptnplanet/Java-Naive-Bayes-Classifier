@@ -8,6 +8,17 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * Abstract base extended by any concrete classifier.  It implements the basic
+ * functionality for storing categories or features and can be used to calculate
+ * basic probabilities – both category and feature probabilities. The classify
+ * function has to be implemented by the concrete classifier class.
+ *
+ * @author Philipp Nolte
+ *
+ * @param <T> A feature class
+ * @param <K> A category class
+ */
 public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
 
     /**
