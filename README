@@ -16,31 +16,6 @@ dogs
 > classify What do I hate
 cats
 
-I am currently thinking about building a 'forgetfull classifier'. The classifier will forget the oldest classifications. Here is the pseudo-code I am thinking of:
-
-function train(featureset, category):
-
-  // Learn a new classification
-  for each feature from featureset:
-    featureCounts[feature][category]++
-    totalFeatureCounts[feature]++
-  end for
-  totalCategoryCounts[category]++
-
-  // remember the last classification
-  memoryQueue.offer(new Classification(featureset, category))
-
-  // Forget about the oldest classification if the
-  // memory is full
-  if memoryQueue.size > memoryCapacity:
-    toForget = memoryQueue.remove()
-    for each feature from toForget.features:
-      featureCounts[feature][toForget.category]--
-      totalFeatureCounts[feature]--
-    end for
-    totalCategoryCounts[toForget.category]--
-  end if
-
-end function
-
+The classifier will forget classifications after - defaulting to 1000 - classifications learned.
+This will ensure, that the classifier can react to ongoing changes in the user's habbits.
 
