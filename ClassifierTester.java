@@ -30,13 +30,11 @@ public class ClassifierTester {
                         Arrays.asList(
                                 Arrays.copyOfRange(tokens, 2, tokens.length));
                 classifier.learn(tokens[1], context);
-                System.out.println("trained. number of categories:\t"
-                + classifier.getCategoriesTotal());
             } else if (tokens[0].startsWith("c")) {
                 Collection<String> context =
                         Arrays.asList(
                                 Arrays.copyOfRange(tokens, 1, tokens.length));
-                System.out.println(classifier.classify(context));
+                classifier.classify(context);
             }
             System.out.print("> ");
         }

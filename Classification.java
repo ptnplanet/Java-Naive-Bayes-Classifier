@@ -63,6 +63,14 @@ public class Classification<T, K> {
     }
 
     /**
+     * Retrieves the classification's probability.
+     * @return
+     */
+    public float getProbability() {
+        return this.probability;
+    }
+
+    /**
      * Retrieves the category the featureset was classified as.
      *
      * @return The category.

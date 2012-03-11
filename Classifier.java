@@ -35,7 +35,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     /**
      * The initial memory capacity or how many classifications are memorized.
      */
-    private static final int MEMORY_CAPACITY = 1000;
+    private static final int MEMORY_CAPACITY = 5;
 
     /**
      * A dictionary mapping features to their number of occurrences in each
@@ -53,6 +53,10 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
      */
     private Dictionary<K, Integer> totalCategoryCount;
 
+    /**
+     * The classifier's memory. It will forget old classifications as soon as
+     * they become too old.
+     */
     private Queue<Classification<T, K>> memoryQueue;
 
     /**
@@ -129,17 +133,17 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
         }
         Integer count = features.get(feature);
         if (count == null) {
-            features.put(feature, 1);
+            features.put(feature, 0);
             count = features.get(feature);
         }
-        count++;
+        features.put(feature, ++count);
 
         Integer totalCount = this.totalFeatureCount.get(feature);
         if (totalCount == null) {
             this.totalFeatureCount.put(feature, 1);
             totalCount = this.totalFeatureCount.get(feature);
         }
-        totalCount++;
+        this.totalFeatureCount.put(feature, ++totalCount);
     }
 
     /**
@@ -154,7 +158,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
             this.totalCategoryCount.put(category, 1);
             count = this.totalCategoryCount.get(category);
         }
-        count++;
+       this.totalCategoryCount.put(category, ++count);
     }
 
     /**
@@ -345,13 +349,31 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
      * @param features The features that resulted in the given category.
      */
     public void learn(K category, Collection<T> features) {
-        for (T feature : features)
-            this.incrementFeature(feature, category);
-        this.incrementCategory(category);
+        this.learn(new Classification<T, K>(features, category));
+    }
 
-        this.memoryQueue.offer(new Classification<T, K>(features, category));
+    /**
+     * Train the classifier by telling it that the given features resulted in
+     * the given category.
+     *
+     * @param classification The classification to learn.
+     */
+    public void learn(Classification<T, K> classification) {
+
+        System.out.println("Learning new classification:\t"
+                + classification);
+
+        for (T feature : classification.getFeatureset())
+            this.incrementFeature(feature, classification.getCategory());
+        this.incrementCategory(classification.getCategory());
+
+        this.memoryQueue.offer(classification);
         if (this.memoryQueue.size() > Classifier.MEMORY_CAPACITY) {
             Classification<T, K> toForget = this.memoryQueue.remove();
+
+            System.out.println("Memory over capacity. Forgetting about\t"
+                    + toForget);
+
             for (T feature : toForget.getFeatureset())
                 this.decrementFeature(feature, toForget.getCategory());
             this.decrementCategory(toForget.getCategory());
