@@ -35,7 +35,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     /**
      * The initial memory capacity or how many classifications are memorized.
      */
-    private static final int MEMORY_CAPACITY = 5;
+    private int memoryCapacity = 200;
 
     /**
      * A dictionary mapping features to their number of occurrences in each
@@ -115,6 +115,28 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     }
 
     /**
+     * Retrieves the memory's capacity.
+     *
+     * @return The memory's capacity.
+     */
+    public int getMemoryCapacity() {
+        return memoryCapacity;
+    }
+
+    /**
+     * Sets the memory's capacity.  If the new value is less than the old
+     * value, the memory will be truncated accordingly.
+     *
+     * @param memoryCapacity The new memory capacity.
+     */
+    public void setMemoryCapacity(int memoryCapacity) {
+        for (int i = this.memoryCapacity; i > memoryCapacity; i--) {
+            this.memoryQueue.poll();
+        }
+        this.memoryCapacity = memoryCapacity;
+    }
+
+    /**
      * Increments the count of a given feature in the given category.  This is
      * equal to telling the classifier, that this feature has occurred in this
      * category.
@@ -140,7 +162,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
 
         Integer totalCount = this.totalFeatureCount.get(feature);
         if (totalCount == null) {
-            this.totalFeatureCount.put(feature, 1);
+            this.totalFeatureCount.put(feature, 0);
             totalCount = this.totalFeatureCount.get(feature);
         }
         this.totalFeatureCount.put(feature, ++totalCount);
@@ -155,7 +177,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     public void incrementCategory(K category) {
         Integer count = this.totalCategoryCount.get(category);
         if (count == null) {
-            this.totalCategoryCount.put(category, 1);
+            this.totalCategoryCount.put(category, 0);
             count = this.totalCategoryCount.get(category);
         }
        this.totalCategoryCount.put(category, ++count);
@@ -179,20 +201,23 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
         if (count == null) {
             return;
         }
-        if (count == 1) {
+        if (count.intValue() == 1) {
             features.remove(feature);
+            if (features.size() == 0) {
+                this.featureCountPerCategory.remove(category);
+            }
         } else {
-            count--;
+            features.put(feature, --count);
         }
 
         Integer totalCount = this.totalFeatureCount.get(feature);
         if (totalCount == null) {
             return;
         }
-        if (totalCount == 1) {
+        if (totalCount.intValue() == 1) {
             this.totalFeatureCount.remove(feature);
         } else {
-            totalCount--;
+            this.totalFeatureCount.put(feature, --totalCount);
         }
     }
 
@@ -207,10 +232,10 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
         if (count == null) {
             return;
         }
-        if (count == 1) {
+        if (count.intValue() == 1) {
             this.totalCategoryCount.remove(category);
         } else {
-            count--;
+            this.totalCategoryCount.put(category, --count);
         }
     }
 
@@ -360,19 +385,13 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
      */
     public void learn(Classification<T, K> classification) {
 
-        System.out.println("Learning new classification:\t"
-                + classification);
-
         for (T feature : classification.getFeatureset())
             this.incrementFeature(feature, classification.getCategory());
         this.incrementCategory(classification.getCategory());
 
         this.memoryQueue.offer(classification);
-        if (this.memoryQueue.size() > Classifier.MEMORY_CAPACITY) {
+        if (this.memoryQueue.size() > this.memoryCapacity) {
             Classification<T, K> toForget = this.memoryQueue.remove();
-
-            System.out.println("Memory over capacity. Forgetting about\t"
-                    + toForget);
 
             for (T feature : toForget.getFeatureset())
                 this.decrementFeature(feature, toForget.getCategory());
@@ -387,6 +406,6 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
      * @param features The features to classify.
      * @return The category most likely.
      */
-    public abstract K classify(Collection<T> features);
+    public abstract Classification<T, K> classify(Collection<T> features);
 
 }

@@ -1,9 +1,7 @@
 package de.daslaboratorium.machinelearning.classifier;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -97,22 +95,25 @@ public class BayesClassifier<T, K> extends Classifier<T, K> {
      * @return The category the set of features is classified as.
      */
     @Override
-    public K classify(Collection<T> features) {
+    public Classification<T, K> classify(Collection<T> features) {
         SortedSet<Classification<T, K>> probabilites =
                 this.categoryProbabilities(features);
 
-        System.out.println("Results:\t");
-        for (Classification<T, K> prob : probabilites)
-            System.out.println(prob);
-
         if (probabilites.size() > 0) {
-            System.out.println("Classified as " +
-                    probabilites.last().getCategory());
-            return probabilites.last().getCategory();
-        } else {
-            System.out.println("No results");
+            return probabilites.last();
         }
         return null;
+    }
+
+    /**
+     * Classifies the given set of features. and return the full details of the
+     * classification.
+     *
+     * @return The set of categories the set of features is classified as.
+     */
+    public Collection<Classification<T, K>> classifyDetailed(
+            Collection<T> features) {
+        return this.categoryProbabilities(features);
     }
 
 }
