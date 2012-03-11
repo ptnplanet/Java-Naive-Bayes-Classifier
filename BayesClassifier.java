@@ -7,18 +7,6 @@ import java.util.Map.Entry;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * A concrete implementation of the abstract Classifier class.  The Bayes
- * classifier implements a naive Bayes approach to classifying a given set of
- * features: classify(feat1,...,featN) = argmax(P(cat)*PROD(P(featI|cat)
- *
- * @author Philipp Nolte
- *
- * @see http://en.wikipedia.org/wiki/Naive_Bayes_classifier
- *
- * @param <T> The feature class.
- * @param <K> The category class.
- */
 public class BayesClassifier<T, K> extends Classifier<T, K> {
 
     /**
@@ -47,7 +35,7 @@ public class BayesClassifier<T, K> extends Classifier<T, K> {
      */
     private float categoryProbability(Collection<T> features, K category) {
         return ((float) this.categoryCount(category)
-                    / (float) this.getTotalCategoryCount())
+                    / (float) this.getCategoriesTotal())
                 * featuresProbabilityProduct(features, category);
     }
 

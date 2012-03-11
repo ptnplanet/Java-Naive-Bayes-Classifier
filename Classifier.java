@@ -4,31 +4,45 @@ import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
-/**
- * Abstract base extended by any concrete classifier.  It implements the basic
- * functionality for storing categories or features and can be used to calculate
- * basic probabilities – both category and feature probabilities. The classify
- * function has to be implemented by the concrete classifier class.
- *
- * @author Philipp Nolte
- *
- * @param <T> A feature class
- * @param <K> A category class
- */
-public abstract class Classifier<T, K>
-        implements BasicProbabilityCalculator<T, K>{
+public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
 
     /**
-     * A dictionary mapping features to their counts in the categories.
+     * Initial capacity of category dictionaries.
      */
-    private Dictionary<T, Dictionary<K, Integer>> featureCounts;
+    private static final int INITIAL_CATEGORY_DICTIONARY_CAPACITY = 16;
+
+    /**
+     * Initial capacity of feature dictionaries. It should be quite big, because
+     * the features will quickly outnumber the categories. 
+     */
+    private static final int INITIAL_FEATURE_DICTIONARY_CAPACITY = 32;
+
+    /**
+     * The initial memory capacity or how many classifications are memorized.
+     */
+    private static final int MEMORY_CAPACITY = 1000;
+
+    /**
+     * A dictionary mapping features to their number of occurrences in each
+     * known category.
+     */
+    private Dictionary<K, Dictionary<T, Integer>> featureCountPerCategory;
+
+    /**
+     * A dictionary mapping features to their number of occurrences.
+     */
+    private Dictionary<T, Integer> totalFeatureCount;
 
     /**
      * A dictionary mapping categories to their number of occurrences.
      */
-    private Dictionary<K, Integer> categoryCounts;
+    private Dictionary<K, Integer> totalCategoryCount;
+
+    private Queue<Classification<T, K>> memoryQueue;
 
     /**
      * Constructs a new classifier without any trained knowledge.
@@ -41,8 +55,16 @@ public abstract class Classifier<T, K>
      * Resets the <i>learned</i> feature and category counts.
      */
     public void reset() {
-        this.featureCounts = new Hashtable<T, Dictionary<K, Integer>>();
-        this.categoryCounts = new Hashtable<K, Integer>();
+        this.featureCountPerCategory =
+                new Hashtable<K, Dictionary<T,Integer>>(
+                        Classifier.INITIAL_CATEGORY_DICTIONARY_CAPACITY);
+        this.totalFeatureCount =
+                new Hashtable<T, Integer>(
+                        Classifier.INITIAL_FEATURE_DICTIONARY_CAPACITY);
+        this.totalCategoryCount =
+                new Hashtable<K, Integer>(
+                        Classifier.INITIAL_CATEGORY_DICTIONARY_CAPACITY);
+        this.memoryQueue = new LinkedList<Classification<T, K>>();
     }
 
     /**
@@ -51,8 +73,7 @@ public abstract class Classifier<T, K>
      * @return The <code>Set</code> of features the classifier knows about.
      */
     public Set<T> getFeatures() {
-        return ((Hashtable<T, Dictionary<K, Integer>>) this.featureCounts)
-                .keySet();
+        return ((Hashtable<T, Integer>) this.totalFeatureCount).keySet();
     }
 
     /**
@@ -61,7 +82,7 @@ public abstract class Classifier<T, K>
      * @return The <code>Set</code> of categories the classifier knows about.
      */
     public Set<K> getCategories() {
-        return ((Hashtable<K, Integer>) this.categoryCounts).keySet();
+        return ((Hashtable<K, Integer>) this.totalCategoryCount).keySet();
     }
 
     /**
@@ -69,12 +90,13 @@ public abstract class Classifier<T, K>
      *
      * @return The total category count.
      */
-    public int getTotalCategoryCount() {
-        int total = 0;
-        for(Enumeration<Integer> e = this.categoryCounts.elements();
-                e.hasMoreElements();)
-            total += e.nextElement();
-        return total;
+    public int getCategoriesTotal() {
+        int toReturn = 0;
+        for (Enumeration<Integer> e = this.totalCategoryCount.elements();
+                e.hasMoreElements();) {
+            toReturn += e.nextElement();
+        }
+        return toReturn;
     }
 
     /**
@@ -85,18 +107,28 @@ public abstract class Classifier<T, K>
      * @param feature The feature, which count to increase.
      * @param category The category the feature occurred in.
      */
-    public void incrementWord(T feature, K category) {
-        Dictionary<K, Integer> categories = this.featureCounts.get(feature);
-        if (categories == null) {
-            this.featureCounts.put(feature, new Hashtable<K, Integer>());
-            categories = this.featureCounts.get(feature);
+    public void incrementFeature(T feature, K category) {
+        Dictionary<T, Integer> features =
+                this.featureCountPerCategory.get(category);
+        if (features == null) {
+            this.featureCountPerCategory.put(category,
+                    new Hashtable<T, Integer>(
+                            Classifier.INITIAL_FEATURE_DICTIONARY_CAPACITY));
+            features = this.featureCountPerCategory.get(category);
         }
-        Integer count = categories.get(category);
+        Integer count = features.get(feature);
         if (count == null) {
-            categories.put(category, 1);
-            count = categories.get(category);
+            features.put(feature, 0);
+            count = features.get(feature);
         }
         count++;
+
+        Integer totalCount = this.totalFeatureCount.get(feature);
+        if (totalCount == null) {
+            this.totalFeatureCount.put(feature, 0);
+            totalCount = this.totalFeatureCount.get(feature);
+        }
+        totalCount++;
     }
 
     /**
@@ -106,12 +138,65 @@ public abstract class Classifier<T, K>
      * @param category The category, which count to increase.
      */
     public void incrementCategory(K category) {
-        Integer count = this.categoryCounts.get(category);
+        Integer count = this.totalCategoryCount.get(category);
         if (count == null) {
-            this.categoryCounts.put(category, 1);
-            count = this.categoryCounts.get(category);
+            this.totalCategoryCount.put(category, 0);
+            count = this.totalCategoryCount.get(category);
         }
         count++;
+    }
+
+    /**
+     * Decrements the count of a given feature in the given category.  This is
+     * equal to telling the classifier that this feature was classified once in
+     * the category.
+     *
+     * @param feature The feature to decrement the count for.
+     * @param category The category.
+     */
+    public void decrementFeature(T feature, K category) {
+        Dictionary<T, Integer> features =
+                this.featureCountPerCategory.get(category);
+        if (features == null) {
+            return;
+        }
+        Integer count = features.get(feature);
+        if (count == null) {
+            return;
+        }
+        if (count == 1) {
+            features.remove(feature);
+        } else {
+            count--;
+        }
+
+        Integer totalCount = this.totalFeatureCount.get(feature);
+        if (totalCount == null) {
+            return;
+        }
+        if (totalCount == 1) {
+            this.totalFeatureCount.remove(feature);
+        } else {
+            totalCount--;
+        }
+    }
+
+    /**
+     * Decrements the count of a given category.  This is equal to telling the
+     * classifier, that this category has occurred once less.
+     *
+     * @param category The category, which count to increase.
+     */
+    public void decrementCategory(K category) {
+        Integer count = this.totalCategoryCount.get(category);
+        if (count == null) {
+            return;
+        }
+        if (count == 1) {
+            this.totalCategoryCount.remove(category);
+        } else {
+            count--;
+        }
     }
 
     /**
@@ -123,10 +208,11 @@ public abstract class Classifier<T, K>
      * @return The number of occurrences of the feature in the category.
      */
     public int featureCount(T feature, K category) {
-        Dictionary<K, Integer> categories = this.featureCounts.get(feature);
-        if (categories == null)
+        Dictionary<T, Integer> features =
+                this.featureCountPerCategory.get(category);
+        if (features == null)
             return 0;
-        Integer count = categories.get(category);
+        Integer count = features.get(feature);
         return (count == null) ? 0 : count.intValue();
     }
 
@@ -137,21 +223,19 @@ public abstract class Classifier<T, K>
      * @return The number of occurrences.
      */
     public int categoryCount(K category) {
-        Integer count = this.categoryCounts.get(category);
+        Integer count = this.totalCategoryCount.get(category);
         return (count == null) ? 0 : count.intValue();
     }
 
     /**
-     * The probability that the feature given occurred in the the category
-     * given.
-     *
-     * @return The probability.
+     * {@inheritDoc}
      */
+    @Override
     public float featureProbability(T feature, K category) {
-        if (categoryCount(category) == 0)
-            return 0.0f;
-        return (float) featureCount(feature, category)
-                / (float) categoryCount(category);
+        if (this.categoryCount(category) == 0)
+            return 0;
+        return (float) this.featureCount(feature, category)
+                / (float) this.categoryCount(category);
     }
 
     /**
@@ -161,7 +245,7 @@ public abstract class Classifier<T, K>
      * probability.
      *
      * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureProbability(Object, Object)
-     * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureWeighedAverage(Object, Object, BasicProbabilityCalculator, float, float)
+     * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureWeighedAverage(Object, Object, IFeatureProbability, float, float)
      *
      * @param feature The feature, which probability to calculate.
      * @param category The category.
@@ -177,7 +261,7 @@ public abstract class Classifier<T, K>
      * overall weight of <code>1.0</code>, an assumed probability of
      * <code>0.5</code> and the given object to use for probability calculation.
      *
-     * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureWeighedAverage(Object, Object, BasicProbabilityCalculator, float, float)
+     * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureWeighedAverage(Object, Object, IFeatureProbability, float, float)
      *
      * @param feature The feature, which probability to calculate.
      * @param category The category.
@@ -185,7 +269,7 @@ public abstract class Classifier<T, K>
      * @return The weighed average probability.
      */
     public float featureWeighedAverage(T feature, K category,
-            BasicProbabilityCalculator<T, K> calculator) {
+            IFeatureProbability<T, K> calculator) {
         return this.featureWeighedAverage(feature, category,
                 calculator, 1.0f, 0.5f);
     }
@@ -195,7 +279,7 @@ public abstract class Classifier<T, K>
      * the given weight and an assumed probability of <code>0.5</code> and the
      * given object to use for probability calculation.
      *
-     * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureWeighedAverage(Object, Object, BasicProbabilityCalculator, float, float)
+     * @see de.daslaboratorium.machinelearning.classifier.Classifier#featureWeighedAverage(Object, Object, IFeatureProbability, float, float)
      *
      * @param feature The feature, which probability to calculate.
      * @param category The category.
@@ -204,7 +288,7 @@ public abstract class Classifier<T, K>
      * @return The weighed average probability.
      */
     public float featureWeighedAverage(T feature, K category,
-            BasicProbabilityCalculator<T, K> calculator, float weight) {
+            IFeatureProbability<T, K> calculator, float weight) {
         return this.featureWeighedAverage(feature, category,
                 calculator, weight, 0.5f);
     }
@@ -222,7 +306,7 @@ public abstract class Classifier<T, K>
      * @return The weighed average probability.
      */
     public float featureWeighedAverage(T feature, K category,
-            BasicProbabilityCalculator<T, K> calculator, float weight,
+            IFeatureProbability<T, K> calculator, float weight,
             float assumedProbability) {
 
         /*
@@ -235,11 +319,7 @@ public abstract class Classifier<T, K>
                     ? this.featureProbability(feature, category)
                             : calculator.featureProbability(feature, category);
 
-        // Calculate the total occurrences of the given feature.
-        int totals = 0;
-        for (K cat : this.getCategories())
-            totals += this.featureCount(feature, cat);
-
+        int totals = this.totalFeatureCount.get(feature);
         return (weight * assumedProbability + totals  * basicProbability)
                 / (weight + totals);
     }
@@ -251,10 +331,18 @@ public abstract class Classifier<T, K>
      * @param category The category the features belong to.
      * @param features The features that resulted in the given category.
      */
-    public void train(K category, Collection<T> features) {
+    public void learn(K category, Collection<T> features) {
         for (T feature : features)
-            this.incrementWord(feature, category);
+            this.incrementFeature(feature, category);
         this.incrementCategory(category);
+
+        this.memoryQueue.offer(new Classification<T, K>(features, category));
+        if (this.memoryQueue.size() > Classifier.MEMORY_CAPACITY) {
+            Classification<T, K> toForget = this.memoryQueue.remove();
+            for (T feature : toForget.getFeatureset())
+                this.decrementFeature(feature, toForget.getCategory());
+            this.decrementCategory(toForget.getCategory());
+        }
     }
 
     /**

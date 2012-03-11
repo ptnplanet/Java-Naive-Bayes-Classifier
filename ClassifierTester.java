@@ -29,9 +29,9 @@ public class ClassifierTester {
                 Collection<String> context =
                         Arrays.asList(
                                 Arrays.copyOfRange(tokens, 2, tokens.length));
-                classifier.train(tokens[1], context);
-                System.out.println("trained.");
-                System.out.println("number of categories:\t" + classifier.getTotalCategoryCount());
+                classifier.learn(tokens[1], context);
+                System.out.println("trained. number of categories:\t"
+                + classifier.getCategoriesTotal());
             } else if (tokens[0].startsWith("c")) {
                 Collection<String> context =
                         Arrays.asList(
