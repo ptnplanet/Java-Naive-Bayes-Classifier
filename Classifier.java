@@ -129,14 +129,14 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
         }
         Integer count = features.get(feature);
         if (count == null) {
-            features.put(feature, 0);
+            features.put(feature, 1);
             count = features.get(feature);
         }
         count++;
 
         Integer totalCount = this.totalFeatureCount.get(feature);
         if (totalCount == null) {
-            this.totalFeatureCount.put(feature, 0);
+            this.totalFeatureCount.put(feature, 1);
             totalCount = this.totalFeatureCount.get(feature);
         }
         totalCount++;
@@ -151,7 +151,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     public void incrementCategory(K category) {
         Integer count = this.totalCategoryCount.get(category);
         if (count == null) {
-            this.totalCategoryCount.put(category, 0);
+            this.totalCategoryCount.put(category, 1);
             count = this.totalCategoryCount.get(category);
         }
         count++;
