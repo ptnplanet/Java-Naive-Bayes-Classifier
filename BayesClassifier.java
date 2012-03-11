@@ -96,7 +96,9 @@ public class BayesClassifier<T, K> extends Classifier<T, K> {
     public K classify(Collection<T> features) {
         SortedSet<Entry<K, Float>> probabilites =
                 this.categoryProbabilities(features);
-        return probabilites.last().getKey();
+        if (probabilites.size() > 0)
+            return probabilites.last().getKey();
+        return null;
     }
 
 }
