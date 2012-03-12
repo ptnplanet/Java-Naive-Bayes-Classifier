@@ -4,18 +4,8 @@ Nothing special, but it works.
 
 Performance improvements, I am currently thinking of:
 
-- For each feature store the total number of occurrences instead of iterating over all available categories trying to find an occurrence.
 - Store the natural logarithms of the feature probabilities and add them together instead of multiplying the probability numbers
 
-Use the ClassifierTester to test. Here is an Example:
-
-> train dogs I like
-> train cats I hate
-> classify What do I like
-dogs
-> classify What do I hate
-cats
-
-The classifier will forget classifications after - defaulting to 1000 - classifications learned.
+The classifier will forget classifications after - defaulting to 200 - classifications learned.
 This will ensure, that the classifier can react to ongoing changes in the user's habbits.
 
