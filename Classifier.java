@@ -35,7 +35,7 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     /**
      * The initial memory capacity or how many classifications are memorized.
      */
-    private int memoryCapacity = 200;
+    private int memoryCapacity = 1000;
 
     /**
      * A dictionary mapping features to their number of occurrences in each
