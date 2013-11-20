@@ -1,19 +1,25 @@
-Naive Bayes Classifier implemented in Java.
+Java Naive Bayes Classifier
 ==================
 
 Nothing special. It works and is well documented, so you should get it running without wasting too much time searching for other alternatives on the net.
 
-Here is an excerpt from the example. The classifier will classify strings as either positive or negative sentiment. Please refer to the full example for a more detailed documentation.
+Example
+------------------
+
+Here is an excerpt from the example. The classifier will classify sentences (arrays of features) as sentences with either positive or negative sentiment. Please refer to the full example for a more detailed documentation.
 
 ```java
+// Create a new bayes classifier with string categories and string features.
 Classifier<String, String> bayes = new BayesClassifier<String, String>();
 
 // Two examples to learn from.
 String[] positiveText = "I love sunny days".split("\\s");
 String[] negativeText = "I hate rain".split("\\s");
 
-// Learn by classifying examples. New categories can be added on the fly,
-// when they are first used.
+// Learn by classifying examples.
+// New categories can be added on the fly, when they are first used.
+// A classification consists of a category and a list of features
+// that resulted in the classification in that category.
 bayes.learn("positive", Arrays.asList(positiveText));
 bayes.learn("negative", Arrays.asList(negativeText));
 
@@ -30,7 +36,9 @@ System.out.println( // will output "negative"
 ((BayesClassifier<String, String>) bayes).classifyDetailed(
     Arrays.asList(unknownText1));
 
-// Change the memory capacity.
+// Change the memory capacity. New learned classifications (using
+// learn method are stored in a queue with the size given here and
+// used to classify unknown sentences.
 bayes.setMemoryCapacity(500);
 ```
 
