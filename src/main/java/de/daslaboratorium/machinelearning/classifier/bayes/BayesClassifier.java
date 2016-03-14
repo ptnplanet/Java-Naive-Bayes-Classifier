@@ -1,9 +1,12 @@
-package de.daslaboratorium.machinelearning.classifier;
+package de.daslaboratorium.machinelearning.classifier.bayes;
 
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import de.daslaboratorium.machinelearning.classifier.Classification;
+import de.daslaboratorium.machinelearning.classifier.Classifier;
 
 /**
  * A concrete implementation of the abstract Classifier class.  The Bayes
