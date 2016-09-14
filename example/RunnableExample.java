@@ -1,5 +1,3 @@
-package de.daslaboratorium.machinelearning.bayes.example;
-
 import java.util.Arrays;
 
 import de.daslaboratorium.machinelearning.classifier.bayes.BayesClassifier;

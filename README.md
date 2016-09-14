@@ -107,6 +107,19 @@ The ```BayesClassifier<T, K>``` class implements the following abstract method:
 
 * ```Classification<T, K> classify(Collection<T> features)``` It will retrieve the most likely category for the features given and depends on the concrete classifier implementation.
 
+
+
+Running the example
+------------------
+
+```shell
+$ git clone https://github.com/ptnplanet/Java-Naive-Bayes-Classifier.git
+$ cd Java-Naive-Bayes-Classifier
+$ javac -cp src/main/java example/RunnableExample.java
+$ java -cp example:src/main/java RunnableExample
+```
+
+
 Possible Performance issues
 ------------------
 
