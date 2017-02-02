@@ -3,6 +3,32 @@ Java Naive Bayes Classifier
 
 Nothing special. It works and is well documented, so you should get it running without wasting too much time searching for other alternatives on the net.
 
+Maven Quick-Start
+------------------
+
+This Java Naive Bayes Classifier can be installed via the jitpack repository. Make sure to add it to your buildfile first.
+
+```xml
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+```
+
+Then, treat it as any other dependency.
+
+```xml
+<dependency>
+  <groupId>com.github.ptnplanet</groupId>
+  <artifactId>java-naive-bayes-classifier</artifactId>
+  <version>1.0</version>
+</dependency>
+```
+
+For other build-tools (e.g. gradle), visit https://jitpack.io for configuration snippets.
+
 Overview
 ------------------
 
