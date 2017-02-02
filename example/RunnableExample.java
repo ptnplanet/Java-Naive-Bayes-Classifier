@@ -1,9 +1,7 @@
-package de.daslaboratorium.machinelearning.bayes.example;
-
 import java.util.Arrays;
 
-import de.daslaboratorium.machinelearning.bayes.BayesClassifier;
-import de.daslaboratorium.machinelearning.bayes.Classifier;
+import de.daslaboratorium.machinelearning.classifier.bayes.BayesClassifier;
+import de.daslaboratorium.machinelearning.classifier.Classifier;
 
 public class RunnableExample {
 
