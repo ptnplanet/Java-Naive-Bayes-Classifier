@@ -73,7 +73,6 @@ public class BayesClassifier<T, K> extends Classifier<T, K> {
                 new TreeSet<Classification<T, K>>(
                         new Comparator<Classification<T, K>>() {
 
-                    @Override
                     public int compare(Classification<T, K> o1,
                             Classification<T, K> o2) {
                         int toReturn = Float.compare(

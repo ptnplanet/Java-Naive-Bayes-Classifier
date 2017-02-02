@@ -270,7 +270,6 @@ public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
     /**
      * {@inheritDoc}
      */
-    @Override
     public float featureProbability(T feature, K category) {
         if (this.categoryCount(category) == 0)
             return 0;
