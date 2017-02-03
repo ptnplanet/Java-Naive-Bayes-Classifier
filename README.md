@@ -24,8 +24,8 @@ Then, treat it as any other dependency.
 ```xml
 <dependency>
   <groupId>com.github.ptnplanet</groupId>
-  <artifactId>java-naive-bayes-classifier</artifactId>
-  <version>1.0.3</version>
+  <artifactId>Java-Naive-Bayes-Classifier</artifactId>
+  <version>1.0.4</version>
 </dependency>
 ```
 

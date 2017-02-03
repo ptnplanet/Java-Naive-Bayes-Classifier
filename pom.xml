@@ -5,14 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.ptnplanet</groupId>
-    <artifactId>java-naive-bayes-classifier</artifactId>
-    <version>1.0.3</version>
+    <artifactId>Java-Naive-Bayes-Classifier</artifactId>
+    <version>1.0.4</version>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
