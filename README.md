@@ -2,6 +2,7 @@ Java Naive Bayes Classifier
 ==================
 
 [![Build Status](https://travis-ci.org/ptnplanet/Java-Naive-Bayes-Classifier.svg?branch=master)](https://travis-ci.org/ptnplanet/Java-Naive-Bayes-Classifier)
+[![](https://jitpack.io/v/ptnplanet/Java-Naive-Bayes-Classifier.svg)](https://jitpack.io/#ptnplanet/Java-Naive-Bayes-Classifier)
 
 Nothing special. It works and is well documented, so you should get it running without wasting too much time searching for other alternatives on the net.
 
