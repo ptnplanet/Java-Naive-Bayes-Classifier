@@ -12,6 +12,6 @@ package de.daslaboratorium.machinelearning.classifier;
  */
 public interface IFeatureProbability<T, K> {
 
-	public float featureProbability(T feature, K category);
+    public float featureProbability(T feature, K category);
 
 }
