@@ -32,6 +32,8 @@ Then, treat it as any other dependency.
 
 For other build-tools (e.g. gradle), visit https://jitpack.io for configuration snippets.
 
+Please also head to the release tab for further releases.
+
 Overview
 ------------------
 
@@ -136,8 +138,6 @@ The ```BayesClassifier<T, K>``` class implements the following abstract method:
 
 * ```Classification<T, K> classify(Collection<T> features)``` It will retrieve the most likely category for the features given and depends on the concrete classifier implementation.
 
-
-
 Running the example
 ------------------
 
@@ -147,7 +147,6 @@ $ cd Java-Naive-Bayes-Classifier
 $ javac -cp src/main/java example/RunnableExample.java
 $ java -cp example:src/main/java RunnableExample
 ```
-
 
 Possible Performance issues
 ------------------
