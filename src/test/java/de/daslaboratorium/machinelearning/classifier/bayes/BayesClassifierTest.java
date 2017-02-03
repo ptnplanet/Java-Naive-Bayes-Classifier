@@ -21,6 +21,7 @@ public class BayesClassifierTest {
 
     @Before
     public void setUp() {
+
         /*
          * Create a new classifier instance. The context features are Strings
          * and the context will be classified with a String according to the
@@ -61,10 +62,9 @@ public class BayesClassifierTest {
         List<Classification<String, String>> list = new ArrayList<Classification<String, String>>(classifications);
 
         Assert.assertEquals(CATEGORY_NEGATIVE, list.get(0).getCategory());
-        Assert.assertEquals(0.0078125, list.get(0).getProbability(), EPSILON);
+        Assert.assertEquals(0.002604166, list.get(0).getProbability(), EPSILON);
 
         Assert.assertEquals(CATEGORY_POSITIVE, list.get(1).getCategory());
-        Assert.assertEquals(0.0234375, list.get(1).getProbability(), EPSILON);
+        Assert.assertEquals(0.028645832, list.get(1).getProbability(), EPSILON);
     }
-
 }
