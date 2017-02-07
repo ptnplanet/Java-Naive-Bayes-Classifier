@@ -26,7 +26,7 @@ Then, treat it as any other dependency.
 <dependency>
   <groupId>com.github.ptnplanet</groupId>
   <artifactId>Java-Naive-Bayes-Classifier</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
 </dependency>
 ```
 
@@ -124,8 +124,9 @@ The abstract ```Classifier<T, K>``` serves as a base for the concrete ```BayesCl
 * ```void incrementCategory(K category)``` Increments the count of a given category.  This is equal to telling the classifier, that this category has occurred once more.
 * ```void decrementFeature(T feature, K category)``` Decrements the count of a given feature in the given category.  This is equal to telling the classifier that this feature was classified once in the category.
 * ```void decrementCategory(K category)``` Decrements the count of a given category.  This is equal to telling the classifier, that this category has occurred once less.
-* ```int featureCount(T feature, K category)``` Retrieves the number of occurrences of the given feature in the given category.
-* ```int categoryCount(K category)``` Retrieves the number of occurrences of the given category.
+* ```int getFeatureCount(T feature, K category)``` Retrieves the number of occurrences of the given feature in the given category.
+* ```int getFeatureCount(T feature)``` Retrieves the total number of occurrences of the given feature.
+* ```int getCategoryCount(K category)``` Retrieves the number of occurrences of the given category.
 * ```float featureProbability(T feature, K category)``` (*implements* ```IFeatureProbability<T, K>.featureProbability```) Returns the probability that the given feature occurs in the given category.
 * ```float featureWeighedAverage(T feature, K category)``` Retrieves the weighed average ```P(feature|category)``` with overall weight of ```1.0``` and an assumed probability of ```0.5```. The probability defaults to the overall feature probability.
 * ```float featureWeighedAverage(T feature, K category, IFeatureProbability<T, K> calculator)``` Retrieves the weighed average ```P(feature|category)``` with overall weight of ```1.0```, an assumed probability of ```0.5``` and the given object to use for probability calculation.
@@ -158,7 +159,7 @@ Performance improvements, I am currently thinking of:
 The MIT License (MIT)
 ------------------
 
-Copyright (c) 2012-2014 Philipp Nolte
+Copyright (c) 2012-2017 Philipp Nolte
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
