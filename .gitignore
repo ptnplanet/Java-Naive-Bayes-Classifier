@@ -11,3 +11,5 @@ target/
 # IntelliJ files
 .idea/
 *.iml
+
+*.prefs
