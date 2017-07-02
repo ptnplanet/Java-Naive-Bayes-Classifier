@@ -21,7 +21,12 @@ import java.util.Set;
  * @param <K>
  *            A category class
  */
-public abstract class Classifier<T, K> implements IFeatureProbability<T, K> {
+public abstract class Classifier<T, K> implements IFeatureProbability<T, K>, java.io.Serializable {
+
+    /**
+     * Generated Serial Version UID (generated for v1.0.5).
+     */
+    private static final long serialVersionUID = 5504911666956811966L;
 
     /**
      * Initial capacity of category dictionaries.
