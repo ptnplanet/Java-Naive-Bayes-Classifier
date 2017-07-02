@@ -26,7 +26,7 @@ Then, treat it as any other dependency.
 <dependency>
   <groupId>com.github.ptnplanet</groupId>
   <artifactId>Java-Naive-Bayes-Classifier</artifactId>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
 </dependency>
 ```
 
