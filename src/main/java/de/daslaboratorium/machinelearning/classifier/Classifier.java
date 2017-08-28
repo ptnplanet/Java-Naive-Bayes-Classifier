@@ -24,7 +24,7 @@ import java.util.Set;
 public abstract class Classifier<T, K> implements IFeatureProbability<T, K>, java.io.Serializable {
 
     /**
-     * Generated Serial Version UID (generated for v1.0.6).
+     * Generated Serial Version UID (generated for v1.0.7).
      */
     private static final long serialVersionUID = 5504911666956811966L;
 

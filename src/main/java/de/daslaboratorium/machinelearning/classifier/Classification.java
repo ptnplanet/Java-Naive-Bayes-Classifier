@@ -1,17 +1,25 @@
 package de.daslaboratorium.machinelearning.classifier;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * A basic wrapper reflecting a classification.  It will store both featureset
+ * A basic wrapper reflecting a classification. It will store both featureset
  * and resulting classification.
  *
  * @author Philipp Nolte
  *
- * @param <T> The feature class.
- * @param <K> The category class.
+ * @param <T>
+ *            The feature class.
+ * @param <K>
+ *            The category class.
  */
-public class Classification<T, K> {
+public class Classification<T, K> implements Serializable {
+
+    /**
+     * Generated Serial Version UID (generated for v1.0.7).
+     */
+    private static final long serialVersionUID = -1210981535415341283L;
 
     /**
      * The classified featureset.
@@ -32,8 +40,10 @@ public class Classification<T, K> {
      * Constructs a new Classification with the parameters given and a default
      * probability of 1.
      *
-     * @param featureset The featureset.
-     * @param category The category.
+     * @param featureset
+     *            The featureset.
+     * @param category
+     *            The category.
      */
     public Classification(Collection<T> featureset, K category) {
         this(featureset, category, 1.0f);
@@ -42,12 +52,14 @@ public class Classification<T, K> {
     /**
      * Constructs a new Classification with the parameters given.
      *
-     * @param featureset The featureset.
-     * @param category The category.
-     * @param probability The probability.
+     * @param featureset
+     *            The featureset.
+     * @param category
+     *            The category.
+     * @param probability
+     *            The probability.
      */
-    public Classification(Collection<T> featureset, K category,
-            float probability) {
+    public Classification(Collection<T> featureset, K category, float probability) {
         this.featureset = featureset;
         this.category = category;
         this.probability = probability;
@@ -64,6 +76,7 @@ public class Classification<T, K> {
 
     /**
      * Retrieves the classification's probability.
+     * 
      * @return
      */
     public float getProbability() {
@@ -84,10 +97,8 @@ public class Classification<T, K> {
      */
     @Override
     public String toString() {
-        return "Classification [category=" + this.category
-                + ", probability=" + this.probability
-                + ", featureset=" + this.featureset
-                + "]";
+        return "Classification [category=" + this.category + ", probability=" + this.probability + ", featureset="
+                + this.featureset + "]";
     }
 
 }

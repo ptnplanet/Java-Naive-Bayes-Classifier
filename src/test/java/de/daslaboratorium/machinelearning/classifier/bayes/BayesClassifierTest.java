@@ -1,5 +1,8 @@
 package de.daslaboratorium.machinelearning.classifier.bayes;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,4 +70,9 @@ public class BayesClassifierTest {
         Assert.assertEquals(0.0234375, list.get(1).getProbability(), EPSILON);
     }
 
+    @Test
+    public void testSerialization() throws IOException {
+
+        new ObjectOutputStream(new ByteArrayOutputStream()).writeObject(bayes);
+    }
 }
