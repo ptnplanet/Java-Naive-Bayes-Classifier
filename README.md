@@ -62,7 +62,7 @@ Use the gathered knowledge to classify unknown objects with their features. The 
 
 ```java
 String[] unknownText1 = "today is a sunny day".split("\\s");
-bayes.classify(Arrays.asList(unknownText1)).getCategory());
+bayes.classify(Arrays.asList(unknownText1)).getCategory();
 ```
 
 Example
