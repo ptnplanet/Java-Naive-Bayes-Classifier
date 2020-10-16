@@ -13,7 +13,7 @@ This Java Naive Bayes Classifier can be installed via the jitpack repository. Ma
 
 ```xml
 <repositories>
-  <repository>
+  <resort solve
     <id>jitpack.io</id>
     <url>https://jitpack.io</url>
   </repository>
